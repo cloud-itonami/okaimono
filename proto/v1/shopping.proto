@@ -1,0 +1,485 @@
+syntax = "proto3";
+
+package okaimono.shopping.v1;
+
+option go_package = "github.com/etzhayyim/etzhayyim-apps-etzhayyim/projects/etzhayyim-project-shopping/gen/proto/v1;okaimonov1";
+
+import "google/protobuf/timestamp.proto";
+
+// -----------------------------------------------------------------------------
+// Enums
+// -----------------------------------------------------------------------------
+
+enum OrderStatus {
+  ORDER_STATUS_UNSPECIFIED = 0;
+  ORDER_STATUS_DRAFT = 1;
+  ORDER_STATUS_PENDING_PAYMENT = 2;
+  ORDER_STATUS_PAID = 3;
+  ORDER_STATUS_PACKED = 4;
+  ORDER_STATUS_SHIPPED = 5;
+  ORDER_STATUS_DELIVERED = 6;
+  ORDER_STATUS_CANCELLED = 7;
+  ORDER_STATUS_REFUND_PENDING = 8;
+  ORDER_STATUS_REFUNDED = 9;
+}
+
+enum PaymentStatus {
+  PAYMENT_STATUS_UNSPECIFIED = 0;
+  PAYMENT_STATUS_PENDING = 1;
+  PAYMENT_STATUS_AUTHORIZED = 2;
+  PAYMENT_STATUS_CAPTURED = 3;
+  PAYMENT_STATUS_FAILED = 4;
+  PAYMENT_STATUS_REFUNDED = 5;
+}
+
+enum ShipmentStatus {
+  SHIPMENT_STATUS_UNSPECIFIED = 0;
+  SHIPMENT_STATUS_CREATED = 1;
+  SHIPMENT_STATUS_READY = 2;
+  SHIPMENT_STATUS_PICKED = 3;
+  SHIPMENT_STATUS_IN_TRANSIT = 4;
+  SHIPMENT_STATUS_DELIVERED = 5;
+  SHIPMENT_STATUS_EXCEPTION = 6;
+}
+
+enum CaseStatus {
+  CASE_STATUS_UNSPECIFIED = 0;
+  CASE_STATUS_NEW = 1;
+  CASE_STATUS_IN_PROGRESS = 2;
+  CASE_STATUS_WAITING_FOR_CUSTOMER = 3;
+  CASE_STATUS_AWAITING_HUMAN = 4;
+  CASE_STATUS_RESOLVED = 5;
+  CASE_STATUS_CLOSED = 6;
+}
+
+enum CasePriority {
+  CASE_PRIORITY_UNSPECIFIED = 0;
+  CASE_PRIORITY_LOW = 1;
+  CASE_PRIORITY_MEDIUM = 2;
+  CASE_PRIORITY_HIGH = 3;
+  CASE_PRIORITY_CRITICAL = 4;
+}
+
+enum SupplierStatus {
+  SUPPLIER_STATUS_UNSPECIFIED = 0;
+  SUPPLIER_STATUS_IDLE = 1;
+  SUPPLIER_STATUS_SOURCING = 2;
+  SUPPLIER_STATUS_ORDERED = 3;
+  SUPPLIER_STATUS_SHIPPED = 4;
+  SUPPLIER_STATUS_RECEIVED = 5;
+  SUPPLIER_STATUS_CANCELLED = 6;
+}
+
+enum DecisionResultStatus {
+  DECISION_STATUS_UNSPECIFIED = 0;
+  DECISION_STATUS_APPROVED = 1;
+  DECISION_STATUS_REJECTED = 2;
+  DECISION_STATUS_ESCALATE = 3;
+}
+
+// -----------------------------------------------------------------------------
+// Domain messages
+// -----------------------------------------------------------------------------
+
+message Money {
+  int64 amount = 1;
+  string currency = 2;
+}
+
+message Product {
+  string product_id = 1;
+  string sku = 2;
+  string title = 3;
+  string category = 4;
+  string merchant_id = 5;
+  Money cost = 6;
+  Money price = 7;
+  double tax_rate = 8;
+  bool active = 9;
+  int32 safety_stock = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+  string unispsc_code = 13;
+  string unispsc_segment = 14;
+  string unispsc_family = 15;
+  string unispsc_class = 16;
+  string commodity_did = 17;
+  string fulfillment_mode = 18;
+}
+
+message ProductStock {
+  string product_id = 1;
+  string location_id = 2;
+  int32 qty_on_hand = 3;
+  int32 qty_reserved = 4;
+  string currency = 5;
+  int32 version = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message Customer {
+  string customer_id = 1;
+  string external_ref = 2;
+  string email = 3;
+  string phone = 4;
+  string language = 5;
+  int32 risk_score = 6;
+}
+
+message OrderItem {
+  string product_id = 1;
+  int32 quantity = 2;
+  Money unit_price = 3;
+  Money unit_cost = 4;
+  string unispsc_code = 5;
+  string commodity_did = 6;
+}
+
+message Order {
+  string order_id = 1;
+  string customer_id = 2;
+  string merchant_id = 3;
+  OrderStatus status = 4;
+  PaymentStatus payment_status = 5;
+  Money total = 6;
+  string source_channel = 7;
+  string saga_id = 8;
+  repeated OrderItem items = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message Shipment {
+  string shipment_id = 1;
+  string order_id = 2;
+  string carrier = 3;
+  string service_type = 4;
+  string tracking_id = 5;
+  ShipmentStatus status = 6;
+  google.protobuf.Timestamp planned_at = 7;
+  google.protobuf.Timestamp shipped_at = 8;
+  google.protobuf.Timestamp delivered_at = 9;
+}
+
+message SupportCase {
+  string case_id = 1;
+  string merchant_id = 2;
+  string order_id = 3;
+  CaseStatus status = 4;
+  CasePriority priority = 5;
+  string channel = 6;
+  string source = 7;
+  bool escalated_to_human = 8;
+  string root_cause = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message AiDecision {
+  string decision_id = 1;
+  string domain = 2;
+  string actor = 3;
+  string decision_ref = 4;
+  google.protobuf.Timestamp created_at = 5;
+  DecisionResultStatus status = 6;
+  double confidence = 7;
+  string rationale = 8;
+  map<string, string> policy_refs = 9;
+  bool auto_approved = 10;
+}
+
+message Supplier {
+  string supplier_id = 1;
+  string merchant_id = 2;
+  string name = 3;
+  string api_contract = 4;
+  bool is_active = 5;
+}
+
+message PurchaseOrder {
+  string po_id = 1;
+  string supplier_id = 2;
+  string product_id = 3;
+  int32 quantity = 4;
+  SupplierStatus status = 5;
+  Money unit_cost = 6;
+  string external_ref = 7;
+  google.protobuf.Timestamp expected_arrival = 8;
+}
+
+message EventEnvelope {
+  string event_name = 1;
+  string request_id = 2;
+  string aggregate_id = 3;
+  string actor = 4;
+  string payload_json = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+// -----------------------------------------------------------------------------
+// Shared request / response
+// -----------------------------------------------------------------------------
+
+message IdempotentRequest {
+  string request_id = 1;
+}
+
+message PageRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+}
+
+message IdNamePair {
+  string id = 1;
+  string name = 2;
+}
+
+message OperationStatus {
+  bool accepted = 1;
+  string reason = 2;
+  string correlation_id = 3;
+}
+
+// -----------------------------------------------------------------------------
+// Catalog / Inventory
+// -----------------------------------------------------------------------------
+
+service CatalogService {
+  rpc GetCatalog(CatalogQuery) returns (CatalogPage);
+  rpc UpsertListing(UpsertListingRequest) returns (Product);
+  rpc ImportUnispscSegment(ImportUnispscSegmentRequest) returns (ImportUnispscSegmentPlan);
+}
+
+service InventoryService {
+  rpc GetStockSummary(StockQuery) returns (StockSummary);
+  rpc ReserveStock(ReserveStockRequest) returns (StockSnapshot);
+}
+
+message CatalogQuery {
+  string merchant_id = 1;
+  string category = 2;
+  int32 limit = 3;
+  string page_token = 4;
+  string unispsc_code = 5;
+  string unispsc_segment = 6;
+  string unispsc_family = 7;
+  string unispsc_class = 8;
+}
+
+message CatalogPage {
+  repeated Product products = 1;
+  string next_page_token = 2;
+  int32 total = 3;
+}
+
+message UpsertListingRequest {
+  string merchant_id = 1;
+  Product product = 2;
+  string description_md = 3;
+  bool validate_unispsc_classification = 4;
+}
+
+message ImportUnispscSegmentRequest {
+  string segment_code = 1;
+  int32 page_size = 2;
+  bool dry_run = 3;
+}
+
+message ImportUnispscSegmentPlan {
+  string segment_code = 1;
+  string source_graph = 2;
+  string transform_tool = 3;
+  string target_collection = 4;
+  int32 page_size = 5;
+  bool dry_run = 6;
+}
+
+message StockQuery {
+  string product_id = 1;
+  string location_id = 2;
+  string page_token = 3;
+  int32 page_size = 4;
+}
+
+message StockSummary {
+  repeated ProductStock stocks = 1;
+  int32 low_stock_count = 2;
+}
+
+message ReserveStockRequest {
+  string request_id = 1;
+  repeated StockReserveLine lines = 2;
+  string reason = 3;
+}
+
+message StockReserveLine {
+  string product_id = 1;
+  string location_id = 2;
+  int32 quantity = 3;
+}
+
+message StockSnapshot {
+  string saga_id = 1;
+  bool all_reserved = 2;
+  repeated ProductStock stocks = 3;
+}
+
+// -----------------------------------------------------------------------------
+// Orders / Fulfillment
+// -----------------------------------------------------------------------------
+
+service OrderService {
+  rpc CreateOrder(CreateOrderRequest) returns (Order);
+  rpc GetOrder(OrderLookup) returns (Order);
+  rpc UpdateOrderState(UpdateOrderStateRequest) returns (Order);
+}
+
+message CreateOrderRequest {
+  IdempotentRequest idempotent = 1;
+  string customer_id = 2;
+  string merchant_id = 3;
+  string source_channel = 4;
+  repeated OrderItem items = 5;
+  string currency = 6;
+  string shipping_postal = 7;
+}
+
+message OrderLookup {
+  string order_id = 1;
+}
+
+message UpdateOrderStateRequest {
+  string order_id = 1;
+  OrderStatus status = 2;
+  PaymentStatus payment_status = 3;
+  string saga_id = 4;
+}
+
+service FulfillmentService {
+  rpc CreateShipmentPlan(ShipmentPlanRequest) returns (Shipment);
+  rpc RegisterCarrierEvent(CarrierEvent) returns (OperationStatus);
+}
+
+message ShipmentPlanRequest {
+  string order_id = 1;
+  string carrier = 2;
+  string service_type = 3;
+}
+
+message CarrierEvent {
+  string shipment_id = 1;
+  ShipmentStatus status = 2;
+  string tracking_id = 3;
+}
+
+// -----------------------------------------------------------------------------
+// Procurement / pricing / finance / support / orchestrator
+// -----------------------------------------------------------------------------
+
+service ProcurementService {
+  rpc FindSupplierOffers(SupplierDemand) returns (SupplierOffers);
+  rpc PlacePurchaseOrder(PurchaseOrderCommand) returns (PurchaseOrder);
+}
+
+message SupplierDemand {
+  string merchant_id = 1;
+  repeated IdNamePair candidate_skus = 2;
+  int32 forecast_days = 3;
+}
+
+message SupplierOffers {
+  repeated PurchaseOrder offers = 1;
+  Money total_estimated_cost = 2;
+}
+
+message PurchaseOrderCommand {
+  string supplier_id = 1;
+  string product_id = 2;
+  int32 quantity = 3;
+  Money unit_cost = 4;
+}
+
+service FinanceService {
+  rpc CreateRefund(RefundRequest) returns (OperationStatus);
+  rpc CreatePayout(PayoutRequest) returns (OperationStatus);
+}
+
+message RefundRequest {
+  string order_id = 1;
+  string reason = 2;
+  IdempotentRequest idempotent = 3;
+}
+
+message PayoutRequest {
+  string merchant_id = 1;
+  Money amount = 2;
+}
+
+service SupportService {
+  rpc CreateCase(CaseCreateRequest) returns (SupportCase);
+  rpc PostCaseMessage(CaseMessageRequest) returns (SupportCase);
+  rpc CloseCase(CaseCloseRequest) returns (SupportCase);
+}
+
+message CaseCreateRequest {
+  string merchant_id = 1;
+  string order_id = 2;
+  string source = 3;
+  string note = 4;
+  CasePriority priority = 5;
+}
+
+message CaseMessageRequest {
+  string case_id = 1;
+  string message = 2;
+  string agent = 3;
+  bool escalate = 4;
+}
+
+message CaseCloseRequest {
+  string case_id = 1;
+  string resolution = 2;
+}
+
+service OrchestratorService {
+  rpc ReceiveIntent(IntentRequest) returns (IntentResponse);
+  rpc ValidateDecision(DecisionValidationRequest) returns (DecisionValidationResponse);
+  rpc EmitDecision(EventEnvelope) returns (AiDecision);
+}
+
+message OrderIntentLine {
+  string sku = 1;
+  int32 quantity = 2;
+}
+
+message IntentRequest {
+  string merchant_id = 1;
+  string customer_id = 2;
+  string channel = 3;
+  repeated OrderIntentLine lines = 4;
+  string request_id = 5;
+}
+
+message IntentResponse {
+  bool accepted = 1;
+  string order_id = 2;
+  bool reserve_ok = 3;
+  double confidence = 4;
+  string rationale = 5;
+  repeated string risk_factors = 6;
+  string suggestion = 7;
+}
+
+message DecisionValidationRequest {
+  string actor = 1;
+  string action_type = 2;
+  string target_id = 3;
+  double auto_confidence = 4;
+  bool human_override = 5;
+}
+
+message DecisionValidationResponse {
+  DecisionResultStatus status = 1;
+  string reason = 2;
+  uint32 retry_limit = 3;
+}

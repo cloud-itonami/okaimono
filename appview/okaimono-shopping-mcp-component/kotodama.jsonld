@@ -1,0 +1,135 @@
+{
+  "@context": "https://etzhayyim.com/ns/kotodama/v1",
+  "@id": "did:web:okaimono.etzhayyim.com",
+  "component": {
+    "path": "component.wasm"
+  },
+  "convoSystemPrompt": "You are okaimono D2C store agent. Okaimono is a D2C (Direct-to-Consumer) OEM-only EC store. All products are self-branded and manufactured via OEM factories through tsukuru.etzhayyim.com. No resale or third-party marketplace products. Respond helpfully in the users language.",
+  "deploy": {},
+  "duties": [
+    "勤労の義務"
+  ],
+  "governance": {
+    "raci": "responsible",
+    "classification": "internal",
+    "complianceFrameworks": [
+      "consumer-protection-act"
+    ]
+  },
+  "kpi": [
+    "credits の獲得"
+  ],
+  "name": "okaimono-d2c-store",
+  "nanoid": "ok4imn1o",
+  "performerType": "service",
+  "profile": {
+    "agentType": "autonomous",
+    "capabilities": [
+      "e-commerce",
+      "product-catalog",
+      "unispsc-classification",
+      "unispsc-catalog-import"
+    ],
+    "category": "commerce",
+    "description": "Okaimono — D2C OEM-only AI-operated EC store. Self-branded OEM products manufactured via tsukuru.etzhayyim.com. Catalog, orders, inventory, dynamic pricing, reviews, recommendations, fulfillment, customer support, analytics, and BTO/MTO/CTO manufacturing.",
+    "displayName": "Okaimono D2C Store",
+    "isBot": true,
+    "operator": "etzhayyim.com"
+  },
+  "project": "okaimono",
+  "routes": [
+    {
+      "host": "okaimono.etzhayyim.com",
+      "paths": [
+        "/"
+      ],
+      "tls": true
+    },
+    {
+      "host": "ok4imn1o.etzhayyim.com",
+      "paths": [
+        "/"
+      ],
+      "tls": true
+    }
+  ],
+  "runtimeType": "worker",
+  "space": {
+    "channels": [
+      {
+        "default": true,
+        "description": "Store activity — new OEM products, orders, promotions",
+        "kind": "public",
+        "name": "store-feed"
+      },
+      {
+        "description": "OEM manufacturing — production progress, quality inspections, factory updates",
+        "kind": "public",
+        "name": "manufacturing-ops"
+      },
+      {
+        "description": "Customer support cases and resolutions",
+        "kind": "public",
+        "name": "customer-support"
+      },
+      {
+        "description": "Daily KPI digests and business intelligence",
+        "kind": "public",
+        "name": "analytics-digest"
+      }
+    ],
+    "description": "D2C OEM-only AI-operated EC store — catalog, orders, inventory, pricing, reviews, recommendations, fulfillment, support, analytics, OEM manufacturing (tsukuru)",
+    "historyVisibility": "world-readable",
+    "joinRule": "public",
+    "name": "Okaimono D2C Store"
+  },
+  "triggers": {
+    "http": {
+      "listen": "0.0.0.0:8080",
+      "routes": [
+        "/api/grpc/...",
+        "/health",
+        "/healthz",
+        "/readyz",
+        "/..."
+      ],
+      "spa": true,
+      "staticDir": "/wasm/svelte/dist"
+    },
+    "subscribeRepos": {
+      "collections": [
+        "com.etzhayyim.apps.okaimono.catalogItem",
+        "com.etzhayyim.apps.okaimono.order",
+        "com.etzhayyim.apps.okaimono.stockReservation",
+        "com.etzhayyim.apps.okaimono.stockMovement",
+        "com.etzhayyim.apps.okaimono.shipment",
+        "com.etzhayyim.apps.okaimono.carrierEvent",
+        "com.etzhayyim.apps.okaimono.review",
+        "com.etzhayyim.apps.okaimono.promotion",
+        "com.etzhayyim.apps.okaimono.supportCase",
+        "com.etzhayyim.apps.okaimono.supportMessage",
+        "com.etzhayyim.apps.okaimono.return",
+        "com.etzhayyim.apps.okaimono.refund",
+        "com.etzhayyim.apps.okaimono.webhookEvent",
+        "com.etzhayyim.apps.okaimono.analyticsEvent",
+        "com.etzhayyim.apps.okaimono.productionLink",
+        "com.etzhayyim.apps.okaimono.productionProgress",
+        "com.etzhayyim.apps.okaimono.qualityResult",
+        "app.bsky.feed.like",
+        "app.bsky.feed.post",
+        "app.bsky.feed.repost",
+        "app.bsky.graph.follow",
+        "com.etzhayyim.apps.kaimonoUreview.product_score",
+        "com.etzhayyim.apps.kaimonoUreview.best_pick",
+        "com.etzhayyim.apps.trust.score",
+        "com.etzhayyim.apps.unispsc.commodity",
+        "com.etzhayyim.apps.tsukuru.productionOrder",
+        "com.etzhayyim.apps.tsukuru.productionProgress",
+        "com.etzhayyim.apps.tsukuru.qualityInspection",
+        "com.etzhayyim.apps.tsukuru.manufacturer",
+        "com.etzhayyim.gtin.product"
+      ]
+    }
+  },
+  "uiType": "appview"
+}

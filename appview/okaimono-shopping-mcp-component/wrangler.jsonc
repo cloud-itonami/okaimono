@@ -1,0 +1,40 @@
+{
+  "name": "kotodama-ok4imn1o",
+  "main": "svelte/.svelte-kit/cloudflare/_worker.js",
+  "compatibility_date": "2025-03-17",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "nodejs_als"
+  ],
+  "assets": {
+    "directory": "./svelte/.svelte-kit/cloudflare/client",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  },
+  "vars": {
+    "APP_CAPABILITIES": "[\"e-commerce\",\"product-catalog\"]",
+    "APP_DESCRIPTION": "Okaimono — D2C OEM-only AI-operated EC store. Self-branded OEM products manufactured via tsukuru.etzhayyim.com. Catalog, orders, inventory, dynamic pricing, reviews, recommendations, fulfillment, customer support, analytics, and BTO/MTO/CTO manufacturing.",
+    "APP_DISPLAY_NAME": "Okaimono D2C Store",
+    "APP_EMBED_URL": "https://ok4imn1o.etzhayyim.com/?embed=1",
+    "APP_FRAMEWORK": "sveltekit-edge-bff",
+    "AGENTGATEWAY_MCP_ROUTER_URL": "https://mcp.etzhayyim.com/xrpc/com.etzhayyim.mcp.message",
+    "APP_NANOID": "ok4imn1o",
+    "APP_PERFORMER_TYPE": "service",
+    "APP_UI_TYPE": "appview"
+  },
+  "rules": [
+    {
+      "type": "CompiledWasm",
+      "globs": [
+        "**/*.wasm"
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "pattern": "ok4imn1o.etzhayyim.com/*",
+      "zone_name": "etzhayyim.com"
+    }
+  ]
+}

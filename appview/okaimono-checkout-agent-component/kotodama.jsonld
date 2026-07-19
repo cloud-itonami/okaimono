@@ -1,0 +1,63 @@
+{
+  "@context": "https://etzhayyim.com/ns/kotodama/v1",
+  "@id": "did:web:okaimono.etzhayyim.com",
+  "accent": "#6366f1",
+  "component": {
+    "path": "component.wasm"
+  },
+  "convoSystemPrompt": "You are okaimono D2C checkout agent. You orchestrate checkout SAGA flows for D2C OEM orders — both stock-based and BTO/MTO/CTO manufacturing orders via tsukuru.etzhayyim.com. Respond helpfully in the users language.",
+  "duties": [
+    "勤労の義務"
+  ],
+  "governance": {
+    "raci": "responsible",
+    "classification": "internal",
+    "complianceFrameworks": [
+      "consumer-protection-act"
+    ]
+  },
+  "kpi": [
+    "credits の獲得"
+  ],
+  "name": "okaimono-d2c-checkout-agent",
+  "nanoid": "a1ef52ee",
+  "performerType": "service",
+  "profile": {
+    "agentType": "autonomous",
+    "capabilities": [
+      "e-commerce",
+      "product-catalog"
+    ],
+    "description": "Okaimono D2C Checkout Agent — SAGA orchestrator for D2C OEM orders (stock + BTO/MTO/CTO manufacturing)",
+    "displayName": "Okaimono D2C Checkout Agent",
+    "isBot": true,
+    "operator": "etzhayyim.com"
+  },
+  "project": "okaimono",
+  "runtimeType": "worker",
+  "space": {
+    "channels": [
+      {
+        "default": true,
+        "kind": "public",
+        "name": "1ef52ee4-feed"
+      }
+    ],
+    "joinRule": "public",
+    "name": "Okaimono Checkout Agent Component"
+  },
+  "triggers": {
+    "subscribeRepos": {
+      "collections": [
+        "app.bsky.feed.post",
+        "app.bsky.feed.like",
+        "app.bsky.feed.repost",
+        "app.bsky.graph.follow",
+        "com.etzhayyim.apps.okaimono.okaimonoEntity",
+        "com.etzhayyim.apps.okaimono.okaimonoEvent",
+        "com.etzhayyim.apps.okaimono.okaimonoReport"
+      ]
+    }
+  },
+  "uiType": "yoro"
+}

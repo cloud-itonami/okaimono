@@ -1,0 +1,113 @@
+{
+  "@context": "https://schema.org/",
+  "@type": "Project",
+  "name": "etzhayyim-project-okaimono",
+  "identifier": "etzhayyim-project-okaimono",
+  "status": "Active",
+  "description": "Repositioned and unified EC project combining the implemented shopping runtime and EC strategy assets in a single mcp component + static delivery stack.",
+  "hasPart": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "okaimono-shopping-mcp-component",
+      "applicationCategory": "wasmcomponent-backend",
+      "url": "wasm/okaimono-shopping-mcp-component"
+    },
+    {
+      "@type": "CreativeWork",
+      "name": "Integrated EC Strategy",
+      "url": "integration/ec/PROJECT.jsonld"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "okaimono-source-crawler-component",
+      "applicationCategory": "wasmcomponent-crawler",
+      "url": "wasm/okaimono-source-crawler-component",
+      "description": "EC product data collection worker. Imports etzhayyim:crawl-engine + etzhayyim:frontier, exports etzhayyim:product-source."
+    },
+    {
+      "@type": "Dataset",
+      "name": "Product Resources & Entities",
+      "url": "data/resources/",
+      "description": "EC platform data sources and product resource schemas (JSON-LD)."
+    },
+    {
+      "@type": "Dataset",
+      "name": "Normalized Entities",
+      "url": "data/entities/",
+      "description": "Normalized product, marketplace listing, and arbitrage opportunity entity definitions."
+    },
+    {
+      "@type": "CreativeWork",
+      "name": "Crawler Collection Plan",
+      "url": "data/crawler/collection-plan.jsonld",
+      "description": "Master collection plan with per-source configs and schedules."
+    }
+  ],
+  "keywords": [
+    "shopping",
+    "ec",
+    "okaimono",
+    "spinapp",
+    "mcp",
+    "crawler",
+    "arbitrage",
+    "product-source"
+  ],
+  "rdfUnifiedDocuments": {
+    "@type": "Dataset",
+    "name": "Unified top-level RDF/JSON-LD documents",
+    "description": "Consolidated from project top-level *.jsonld files except PROJECT.jsonld.",
+    "documents": [
+      {
+        "fileName": "activities.jsonld",
+        "content": {
+          "@context": "https://schema.org/",
+          "@type": "CreativeWork",
+          "name": "etzhayyim-project-okaimono activities",
+          "description": "Consolidated activities from shopping and ec projects",
+          "about": [
+            "order to shipment automation",
+            "procurement and inventory optimization",
+            "customer support automation",
+            "global EC strategy execution"
+          ]
+        }
+      },
+      {
+        "fileName": "capabilities.jsonld",
+        "content": {
+          "@context": "https://schema.org/",
+          "@type": "DefinedTermSet",
+          "name": "etzhayyim-project-okaimono capabilities",
+          "hasDefinedTerm": [
+            {
+              "@type": "DefinedTerm",
+              "name": "Shopping MCP Runtime",
+              "description": "Uses the implemented shopping MCP backend (orders/fulfillment/procurement/support)."
+            },
+            {
+              "@type": "DefinedTerm",
+              "name": "EC Strategy Integration",
+              "description": "Packages existing etzhayyim-project-ec strategy/capabilities artifacts inside the okaimono project."
+            },
+            {
+              "@type": "DefinedTerm",
+              "name": "Okaimono Static Site",
+              "description": "Serves okaimono UI via integrated static delivery in okaimono-shopping-mcp-component."
+            }
+          ]
+        }
+      },
+      {
+        "fileName": "scheduler.jsonld",
+        "content": {
+          "@context": "https://schema.org/",
+          "@type": "Schedule",
+          "name": "okaimono consolidated review",
+          "repeatFrequency": "P1W",
+          "description": "Weekly consolidated review for shopping execution metrics and EC strategic initiatives."
+        }
+      }
+    ]
+  }
+}

@@ -34,8 +34,9 @@ commit. Both source repositories are public, so no credentials are needed:
 
 Both are TypeScript sources that build to `dist/` in a `prepare` script, so the
 install is not a plain download — it runs `tsc` for the SDK and its seven
-transitive `@etzhayyim/*` packages. Budget the time: this install took
-**5m56s** (`309s` user CPU) on an M-series laptop with a warm npm cache.
+transitive `@etzhayyim/*` packages. Budget the time: two runs on an M-series
+laptop took **5m56s** and **4m28s** wall clock (~310s user CPU each; the
+spread is contention on a busy machine, not cache warmth).
 
 ## 1. Install
 

@@ -2,14 +2,17 @@
 
 What an operator can actually run in this repository today, and what they
 cannot. Every command below was executed against commit `5ae21a2` on
-2026-08-19; the outputs quoted are the ones it produced, not expected values.
+2026-08-19; the outputs quoted are the ones it produced, not expected values —
+**except** the "The ClojureScript appview" section below, which documents a
+2026-08-26 migration that replaced the SvelteKit frontend and was verified
+separately (see that section for its own measured commands/output).
 
 ## TL;DR
 
 | Part | Path | Runnable from this repo alone? |
 |---|---|---|
 | kotoba reference implementation | `kotoba/` | **Yes** — install, test, typecheck |
-| shopping-mcp appview (SvelteKit) | `appview/okaimono-shopping-mcp-component/svelte/` | **No** — unresolvable workspace dependency, see below |
+| shopping-mcp appview (ClojureScript) | `appview/okaimono-shopping-mcp-component/cljs/` | **Yes** — install, `shadow-cljs compile app`/`test`, see below |
 | checkout-agent appview | `appview/okaimono-checkout-agent-component/` | **No** — design documents only, no source |
 | Cloudflare deploy | `appview/*/wrangler.jsonc` | **No** — depends on the appview build above |
 
@@ -120,43 +123,66 @@ npm run typecheck    # tsc --noEmit
 Produced no output and exited 0. `tsconfig.json` includes `src/**/*.ts` only,
 so this checks the implementation and not the test file.
 
-## What you cannot run from this repository
+## The ClojureScript appview (2026-08-26 migration)
 
-### The SvelteKit appview
-
-`appview/okaimono-shopping-mcp-component/svelte/package.json` declares
-
-```json
-"@etzhayyim/design-system": "workspace:*"
-```
-
-but no `pnpm-workspace.yaml` exists anywhere in this repository — it was left
+`appview/okaimono-shopping-mcp-component/svelte/` (SvelteKit 5 + Vite 6 +
+`@sveltejs/adapter-cloudflare`) was **removed** and replaced with
+`appview/okaimono-shopping-mcp-component/cljs/` (shadow-cljs + reagent +
+re-frame, rendered with `jp-go-dds.core` — this workspace's base design
+system). The old frontend was never buildable from this repository alone:
+its `package.json` declared `"@etzhayyim/design-system": "workspace:*"`, but
+no `pnpm-workspace.yaml` existed anywhere in this repository — it was left
 behind when the app was extracted from `etzhayyim/root` (see `migration.edn`).
-Both install paths fail, and they fail for two different reasons:
+Both `pnpm install --frozen-lockfile` (`ERR_PNPM_OUTDATED_LOCKFILE`) and plain
+`pnpm install` (`ERR_PNPM_WORKSPACE_PKG_NOT_FOUND`) failed against it. The new
+frontend has no workspace-protocol dependency and does not have this problem.
+
+There were exactly two source files to port, and both were ported one-to-one
+(see the docstring in `cljs/src/okaimono/app.cljs`):
+
+- `svelte/src/App.svelte` — a heading + one paragraph scaffold, no
+  interactivity — ported as `okaimono.app/app-component`.
+- `svelte/src/routes/+page.svelte` — the SvelteKit route for `/`, whose body
+  was only `<script>import App from '../App.svelte'</script><App />` — ported
+  as `okaimono.app/home-page`, the thing mounted at `/` (this workspace is
+  single-page-app-only, ADR-2608080100: one document, one bundle, one mount).
+
+```bash
+cd appview/okaimono-shopping-mcp-component/cljs
+npm install
+npx shadow-cljs compile app                          # -> public/js/app.js
+npx shadow-cljs compile test && node out/tests.js    # cljs.test over the re-frame event/sub logic
+```
+
+Measured 2026-08-26, from a clean `npm install`:
 
 ```
-$ pnpm install --frozen-lockfile
- ERR_PNPM_OUTDATED_LOCKFILE  ... specifiers in the lockfile don't match
- * 2 dependencies were added: @sveltejs/adapter-cloudflare@^7.2.8,
-                              @etzhayyim/design-system@workspace:*
+[:app] Build completed. (111 files, 110 compiled, 0 warnings, 15.71s)
+[:test] Build completed. (112 files, 111 compiled, 0 warnings, 11.05s)
 
-$ pnpm install
- ERR_PNPM_WORKSPACE_PKG_NOT_FOUND  "@etzhayyim/design-system@workspace:*" is in
- the dependencies but no package named "@etzhayyim/design-system" is present in
- the workspace
+Testing okaimono.app-test
+re-frame: Subscribe was called outside of a reactive context.
+ https://day8.github.io/re-frame/FAQs/UseASubscriptionInAnEventHandler/
+[... same warning, 4 times — expected: the test namespace calls
+ rf/subscribe directly, not inside a Reagent render, same as the other
+ cljs migrations in this workspace ...]
+
+Ran 4 tests containing 6 assertions.
+0 failures, 0 errors.
 ```
-
-So `pnpm-lock.yaml` is also stale relative to its own `package.json`.
-Building the appview requires a workspace that provides the design system;
-fixing that is not a matter of running a different install command.
 
 ### `etzhayyim build` / `etzhayyim deploy`
 
 The `etzhayyim` CLI is not on `PATH` here and this repository does not vendor
-it. `appview/okaimono-shopping-mcp-component/wrangler.jsonc` points `main` at
-`svelte/.svelte-kit/cloudflare/_worker.js`, which is an output of the appview
-build above — so deployment is blocked behind the same missing workspace, not
-behind the CLI alone.
+it, so that CLI invocation still cannot run regardless of the frontend
+migration. Separately, `appview/okaimono-shopping-mcp-component/wrangler.jsonc`
+used to point `main` at `svelte/.svelte-kit/cloudflare/_worker.js` (an output
+of the old SvelteKit build); it has been updated to drop `main` (the new
+frontend has no server-rendering step — a Cloudflare Worker can be
+assets-only) and point `assets.directory` at `./cljs/public` instead. **That
+`wrangler.jsonc` edit is unverified** — `wrangler deploy`/`wrangler dev` were
+not run against it here; actually deploying is out of scope for a frontend
+migration.
 
 ## Repository identity is inconsistent
 

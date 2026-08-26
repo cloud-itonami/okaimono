@@ -11,7 +11,7 @@ what actually runs from this repository, what does not, and why.
 | Path | What it is | Runnable here? |
 |---|---|---|
 | `kotoba/` | Reference implementation (TypeScript): catalog, orders, tithe split, inventory, fulfillment, support, settlement seam | **Yes** — `npm install && npm test` (32 tests) |
-| `appview/okaimono-shopping-mcp-component/` | Marketplace component `ok4imn1o` — SvelteKit app + `wrangler.jsonc` | No — see below |
+| `appview/okaimono-shopping-mcp-component/` | Marketplace component `ok4imn1o` — ClojureScript (shadow-cljs + reagent + re-frame + jp-go-dds) frontend + `wrangler.jsonc` | **Yes**, the frontend — `cd appview/okaimono-shopping-mcp-component/cljs && npm install && npx shadow-cljs compile app` |
 | `appview/okaimono-checkout-agent-component/` | Checkout SAGA orchestrator `chk8uty2` — design documents only | No — no source |
 | `proto/v1/shopping.proto` | Wire schema | — |
 
@@ -29,24 +29,48 @@ value transfer behind an injected `SettlementExecutor` — the single seam
 (ADR-2605172100) — so the test suite exercises the full order lifecycle without
 touching a chain.
 
-## Deployment — currently blocked
+## Frontend
 
-The appview cannot be built from this repository alone: its `package.json`
-requires `@etzhayyim/design-system` via pnpm's `workspace:*` protocol, and the
-workspace that provided it did not come along when the app was extracted from
-`etzhayyim/root` (see `migration.edn`). `wrangler.jsonc` points `main` at the
-output of that build, so deploy is blocked behind the same gap.
+```bash
+cd appview/okaimono-shopping-mcp-component/cljs
+npm install
+npx shadow-cljs compile app      # -> public/js/, served alongside public/index.html
+npx shadow-cljs compile test && node out/tests.js   # cljs.test over the re-frame event/sub logic
+```
 
-Earlier revisions of this file documented
+ClojureScript (shadow-cljs) + reagent 1.2.0 + re-frame 1.4.3, rendered with
+`jp-go-dds.core` (デジタル庁デザインシステム) hiccup — this workspace's base
+design system. `public/index.html`'s inlined CSS was produced once via
+`jp-go-dds.page/->page`; see the docstring at the top of
+`src/okaimono/app.cljs` for how to regenerate it. Migrated from the previous
+SvelteKit frontend (`appview/okaimono-shopping-mcp-component/svelte`, removed
+— it was a scaffold, `App.svelte` + `routes/+page.svelte`, both ported
+one-to-one; see `docs/operator-quickstart.md`). Unlike the old SvelteKit
+setup, this frontend has no `workspace:*` dependency and no pnpm workspace
+requirement, so it is not blocked the way the Svelte build was.
+
+## Deployment — untested, not attempted here
+
+`wrangler.jsonc` used to point `main` at
+`svelte/.svelte-kit/cloudflare/_worker.js` (a server-rendering Worker script
+the SvelteKit Cloudflare adapter produced) and `assets.directory` at that
+adapter's static client output — both paths under the now-removed `svelte/`
+tree. The new ClojureScript frontend is a plain static bundle (no
+server-rendering step), so `wrangler.jsonc` here now points `assets.directory`
+at `./cljs/public` and drops `main` entirely (a Cloudflare Worker can be
+assets-only, with no Worker script, when there is nothing to render
+server-side). **This edit is unverified — `wrangler deploy`/`wrangler
+dev` were not run against it; actually deploying is a separate decision from
+porting the frontend, and is out of scope for this migration.**
+
+Earlier revisions of this file also documented
 
 ```bash
 cd wasm/okaimono-shopping-mcp-component && etzhayyim build && etzhayyim deploy
 ```
 
 Neither the `wasm/` directory nor the `etzhayyim` CLI exists in this
-repository. The components live under `appview/`. Restoring a working deploy
-means restoring the design-system workspace first; the quickstart records the
-exact errors.
+repository. The components live under `appview/`.
 
 ## Names
 

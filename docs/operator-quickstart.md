@@ -11,7 +11,7 @@ separately (see that section for its own measured commands/output).
 
 | Part | Path | Runnable from this repo alone? |
 |---|---|---|
-| kotoba reference implementation | `kotoba/` | **Yes** — install, test, typecheck |
+| kotoba reference implementation | `kotoba/` | **No** — the dependency closure is dead; see §1 |
 | shopping-mcp appview (ClojureScript) | `appview/okaimono-shopping-mcp-component/cljs/` | **Yes** — install, `shadow-cljs compile app`/`test`, see below |
 | checkout-agent appview | `appview/okaimono-checkout-agent-component/` | **No** — design documents only, no source |
 | Cloudflare deploy | `appview/*/wrangler.jsonc` | **No** — depends on the appview build above |
@@ -41,7 +41,57 @@ transitive `@etzhayyim/*` packages. Budget the time: two runs on an M-series
 laptop took **5m56s** and **4m28s** wall clock (~310s user CPU each; the
 spread is contention on a busy machine, not cache warmth).
 
-## 1. Install
+## 1. Install — measured again 2026-08-28, and it does not work
+
+**This section's install no longer reproduces, and cannot be made to.** It was
+written from real runs (`5m56s` and `4m28s` wall clock on an M-series laptop),
+and those runs were on a machine whose pnpm/npm state already held prepared
+copies of the git dependencies. From a genuinely cold store:
+
+```console
+$ git archive HEAD:kotoba | tar -x -C /tmp/ok-cold
+$ cd /tmp/ok-cold && pnpm install --store-dir /tmp/empty-store
+ ERR_PNPM_PREPARE_PACKAGE  Failed to prepare git-hosted package fetched from
+ "git@github.com:etzhayyim/com-etzhayyim-sdk.git":
+ @etzhayyim/sdk@0.1.0-alpha npm-install: `npm install`
+ Exit status 1
+```
+
+Two separate problems are visible in that one line.
+
+**The closure is dead.** `@etzhayyim/checkpointer`'s `prepare` runs a nested
+`npm install` that resolves its own floating `#main` refs, and `kotoba-lang/ipfs`
+now redirects to `io-ipfs` — a Clojure repo whose `package.json` has no `name`.
+Root `overrides` cannot reach inside a git dependency's nested install, and
+there is nothing to repin to: the next commit to checkpointer's `package.json`
+deletes it. `cloud-itonami/ec` ADR-0002 has the full measurement; superproject
+ADR-2608281200 has the fleet-wide picture.
+
+**And the dependency is fetched over SSH from a redirect.**
+`kotoba/package.json` pins `git@github.com:etzhayyim/com-etzhayyim-sdk.git` —
+the `git@` form, so the install needs an SSH key, and
+`etzhayyim/com-etzhayyim-sdk` is now a 301 to `kotoba-lang/sdk`. Neither is
+fatal on its own; both make this harder to reproduce than the section below
+suggests.
+
+**If you need okaimono's kotoba layer to run**, the path is the port to
+`kotoba-lang/pay` + `pay.rail.base-l2`, not a lockfile fix. The ClojureScript
+appview (`appview/okaimono-shopping-mcp-component/cljs/`) is unaffected by any
+of this and still builds — it does not depend on the SDK.
+
+### Measuring this yourself
+
+`pnpm install` / `npm install` on your own machine is **not** a cold check: a
+warm store replays prepared git dependencies, which is exactly what hid this.
+Point it at an empty store, or use a CI runner.
+
+---
+
+## 1a. The original section, kept for what it documents
+
+Everything below still describes what the code does and still runs for anyone
+whose store happens to be warm. It is no longer a walkthrough anyone can follow
+from a clean machine.
 
 ```bash
 cd kotoba

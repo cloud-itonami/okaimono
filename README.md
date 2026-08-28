@@ -6,6 +6,18 @@ etzhayyim substrate.
 **Start here: [`docs/operator-quickstart.md`](docs/operator-quickstart.md)** —
 what actually runs from this repository, what does not, and why.
 
+> ⚠️ **2026-08-28: `kotoba/` cannot be installed.** Its TypeScript dependency
+> closure is frozen at the last TS commits of six packages that have since
+> become Clojure, and it cannot be repaired — root `overrides` do not reach
+> inside `@etzhayyim/checkpointer`'s nested `npm install`, and the next commit
+> to that package's `package.json` deletes it. Earlier green installs recorded
+> here came from warm stores. The path forward is the port to
+> `kotoba-lang/pay` + `pay.rail.base-l2`; see `cloud-itonami/ec` ADR-0002 and
+> superproject ADR-2608281200.
+>
+> **The ClojureScript appview is unaffected** and still builds — it does not
+> depend on the SDK.
+
 ## Layout
 
 | Path | What it is | Runnable here? |

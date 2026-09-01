@@ -27,6 +27,40 @@ what actually runs from this repository, what does not, and why.
 | `appview/okaimono-checkout-agent-component/` | Checkout SAGA orchestrator `chk8uty2` — design documents only | No — no source |
 | `proto/v1/shopping.proto` | Wire schema | — |
 
+## Repository-level checks
+
+```bash
+nbb --classpath test run_tests.cljs
+```
+
+No install, no network, no JVM. These check the *seams between files*, which
+neither existing suite can see: the nanoid spelled in five places, the
+`did:web` host against the routes that have to answer for it, the descriptor's
+fields against the Worker's `vars`, the static-bundle wiring (`:output-dir` →
+`:asset-path` → `<script src>` → `assets.directory`), whether `:ns-regexp`
+still selects the ClojureScript test namespace at all, and whether the test
+counts published in this file and in `docs/operator-quickstart.md` are still
+the counts the code has. `kotoba/`'s suite sees only `kotoba/src` and cannot
+be installed at all (see the notice above); the ClojureScript suite compares
+`default-db` with `default-db` and needs a JVM.
+
+Three inconsistencies are **deliberately not pinned**, because they are not
+fixed and pinning them would freeze an error as correct:
+
+- `PROJECT.jsonld`'s six `hasPart` URLs all point at paths that do not exist
+  here — `wasm/okaimono-shopping-mcp-component`,
+  `wasm/okaimono-source-crawler-component`, `integration/ec/PROJECT.jsonld`,
+  `data/resources/`, `data/entities/`, `data/crawler/collection-plan.jsonld`.
+- `kotodama.jsonld`'s `triggers.http.staticDir` is `/wasm/cljs/public` — the
+  same removed `wasm/` tree the section below already disclaims.
+- Both `kotodama.jsonld` files carry the same `@id`
+  (`did:web:okaimono.etzhayyim.com`), and the checkout-agent's `nanoid`
+  (`a1ef52ee`) does not match its own channel name (`1ef52ee4-feed`).
+
+A fourth is pinned only in the safe direction: `vars.APP_CAPABILITIES` (2) and
+`profile.capabilities` (4) are not equal, so the suite checks containment —
+the Worker must not advertise a capability the descriptor did not grant.
+
 ## Data Access
 
 W Protocol Event Stream only:

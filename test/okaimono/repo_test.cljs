@@ -60,7 +60,7 @@
      揃っていることだけを見る。
 
   実行:  nbb --classpath test run_tests.cljs"
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is testing]]
             [cljs.reader :as reader]
             ["node:fs" :as fs]

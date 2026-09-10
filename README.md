@@ -30,7 +30,7 @@ what actually runs from this repository, what does not, and why.
 ## Repository-level checks
 
 ```bash
-nbb --classpath test run_tests.cljs
+nbb --classpath test run_tests.kotoba
 ```
 
 No install, no network, no JVM. These check the *seams between files*, which

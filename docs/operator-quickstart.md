@@ -15,10 +15,10 @@ separately (see that section for its own measured commands/output).
 | shopping-mcp appview (ClojureScript) | `appview/okaimono-shopping-mcp-component/cljs/` | **Yes** — install, `shadow-cljs compile app`/`test`, see below |
 | checkout-agent appview | `appview/okaimono-checkout-agent-component/` | **No** — design documents only, no source |
 | Cloudflare deploy | `appview/*/wrangler.jsonc` | **No** — depends on the appview build above |
-| repository-level self-description checks | `run_tests.cljs` | **Yes** — `nbb --classpath test run_tests.cljs`, no install/network/JVM |
+| repository-level self-description checks | `run_tests.kotoba` | **Yes** — `nbb --classpath test run_tests.kotoba`, no install/network/JVM |
 
 There is no top-level `package.json`. Every command below runs from `kotoba/`,
-except `run_tests.cljs`, which runs from the repository root.
+except `run_tests.kotoba`, which runs from the repository root.
 
 ## Prerequisites
 

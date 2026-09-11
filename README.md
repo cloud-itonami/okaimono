@@ -23,14 +23,14 @@ what actually runs from this repository, what does not, and why.
 | Path | What it is | Runnable here? |
 |---|---|---|
 | `kotoba/` | Reference implementation (TypeScript): catalog, orders, tithe split, inventory, fulfillment, support, settlement seam | **Yes** — `npm install && npm test` (32 tests) |
-| `appview/okaimono-shopping-mcp-component/` | Marketplace component `ok4imn1o` — ClojureScript (shadow-cljs + reagent + re-frame + jp-go-dds) frontend + `wrangler.jsonc` | **Yes**, the frontend — `cd appview/okaimono-shopping-mcp-component/cljs && npm install && npx shadow-cljs compile app` |
+| `appview/okaimono-shopping-mcp-component/` | Marketplace component `ok4imn1o` — ClojureScript (shadow-cljs + reagent + re-frame + jp-go-dds) frontend + `wrangler.jsonc` | **Yes**, the frontend — `cd appview/okaimono-shopping-mcp-component/cljs && npm install && amu compile --target wasm32-browser app` |
 | `appview/okaimono-checkout-agent-component/` | Checkout SAGA orchestrator `chk8uty2` — design documents only | No — no source |
 | `proto/v1/shopping.proto` | Wire schema | — |
 
 ## Repository-level checks
 
 ```bash
-nbb --classpath test run_tests.kotoba
+kbb --backend sci --classpath test run_tests.kotoba
 ```
 
 No install, no network, no JVM. These check the *seams between files*, which
@@ -80,8 +80,8 @@ touching a chain.
 ```bash
 cd appview/okaimono-shopping-mcp-component/cljs
 npm install
-npx shadow-cljs compile app      # -> public/js/, served alongside public/index.html
-npx shadow-cljs compile test && node out/tests.js   # cljs.test over the re-frame event/sub logic
+amu compile --target wasm32-browser app      # -> public/js/, served alongside public/index.html
+amu compile --target wasm32-browser test && node out/tests.js   # cljs.test over the re-frame event/sub logic
 ```
 
 ClojureScript (shadow-cljs) + reagent 1.2.0 + re-frame 1.4.3, rendered with

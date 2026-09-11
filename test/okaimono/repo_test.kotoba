@@ -59,7 +59,7 @@
      一覧にしている既知の齟齬。ここでは *同じ名前を使っている 2 ファイル* が
      揃っていることだけを見る。
 
-  実行:  nbb --classpath test run_tests.cljs"
+  実行:  kbb --backend sci --classpath test run_tests.cljs"
   (:require [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is testing]]
             [cljs.reader :as reader]
@@ -326,7 +326,7 @@
 
 (deftest the-cljs-test-build-still-selects-the-test-namespace
   (testing "`:ns-regexp` に一致する ns が 1 つも無くても
-            `shadow-cljs compile test` は成功し、`node out/tests.js` は
+            `amu compile --target wasm32-browser test` は成功し、`node out/tests.js` は
             `Ran 0 tests` と言って **exit 0 で終わる**。つまり ns を改名すると
             『測っていない』が『測って問題が無かった』と同じ顔になる
             （superproject CLAUDE.md の 6 問の 1 番目）。"

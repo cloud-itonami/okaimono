@@ -12,10 +12,10 @@ separately (see that section for its own measured commands/output).
 | Part | Path | Runnable from this repo alone? |
 |---|---|---|
 | kotoba reference implementation | `kotoba/` | **No** — the dependency closure is dead; see §1 |
-| shopping-mcp appview (ClojureScript) | `appview/okaimono-shopping-mcp-component/cljs/` | **Yes** — install, `shadow-cljs compile app`/`test`, see below |
+| shopping-mcp appview (ClojureScript) | `appview/okaimono-shopping-mcp-component/cljs/` | **Yes** — install, `amu compile --target wasm32-browser app`/`test`, see below |
 | checkout-agent appview | `appview/okaimono-checkout-agent-component/` | **No** — design documents only, no source |
 | Cloudflare deploy | `appview/*/wrangler.jsonc` | **No** — depends on the appview build above |
-| repository-level self-description checks | `run_tests.kotoba` | **Yes** — `nbb --classpath test run_tests.kotoba`, no install/network/JVM |
+| repository-level self-description checks | `run_tests.kotoba` | **Yes** — `kbb --backend sci --classpath test run_tests.kotoba`, no install/network/JVM |
 
 There is no top-level `package.json`. Every command below runs from `kotoba/`,
 except `run_tests.kotoba`, which runs from the repository root.
@@ -202,8 +202,8 @@ There were exactly two source files to port, and both were ported one-to-one
 ```bash
 cd appview/okaimono-shopping-mcp-component/cljs
 npm install
-npx shadow-cljs compile app                          # -> public/js/app.js
-npx shadow-cljs compile test && node out/tests.js    # cljs.test over the re-frame event/sub logic
+amu compile --target wasm32-browser app                          # -> public/js/app.js
+amu compile --target wasm32-browser test && node out/tests.js    # cljs.test over the re-frame event/sub logic
 ```
 
 Measured 2026-08-26, from a clean `npm install`:

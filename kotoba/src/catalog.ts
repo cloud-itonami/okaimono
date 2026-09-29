@@ -6,7 +6,7 @@
  * with `e.write({ collection, record, rkey })` — same Option B pattern as
  * hanrei kotoba.
  *
- * D2C OEM-only policy (okaimono CLAUDE.md): every item MUST carry both a
+ * D2C OEM-only policy (okaimono AGENTS.md): every item MUST carry both a
  * manufacturerDid and a factoryDid (tsukuru OEM manufacturing). External resale
  * / marketplace sourcing is prohibited, so an item with no factory is rejected.
  */

@@ -5,7 +5,7 @@
  * Stripe + RisingWave path with AT PDS / kotoba datomic records and on-chain
  * USDC settlement (per ADR-2606011400 on-chain-only + okaimono MIGRATION-TODO).
  *
- * Constitutional invariants (root CLAUDE.md § Substrate boundary):
+ * Constitutional invariants (root AGENTS.md § Substrate boundary):
  *   - State    : AT PDS records (materialize kotoba datom log). No RW / Kysely.
  *   - Payment  : USDC on Base L2 + ERC-4337 + TitheRouter. No Stripe / fiat.
  *   - Purpose  : internal-purchase (SBT↔SBT carve-out) for D2C sales.
@@ -35,7 +35,7 @@ export type ProductionMode = "OEM" | "BTO" | "MTO" | "CTO";
 /**
  * Allowed on-chain settlement purposes for okaimono. A D2C sale between the
  * store and an Adherent (SBT holder) is an `internal-purchase` (SBT↔SBT
- * carve-out, root CLAUDE.md § Payment purpose). External `purchase`/`tip`/
+ * carve-out, root AGENTS.md § Payment purpose). External `purchase`/`tip`/
  * `subscription` are constitutionally prohibited. Refunds use `escrow-refund`.
  */
 export type OkaimonoPaymentPurpose = "internal-purchase" | "escrow-refund";

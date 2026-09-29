@@ -178,7 +178,7 @@
 (deftest the-files-this-suite-reads-still-declare-what-it-reads-from-them
   (testing "抽出が nil を返したら、以下の比較は全部『nil = nil』で緑になりうる。
             **読めなかったことを、一致したことと同じ値にしない**（superproject
-            CLAUDE.md の evidence floor）。"
+            AGENTS.md の evidence floor）。"
     (is (some? nanoid) "kotodama.jsonld の `nanoid` が読めない")
     (is (some? did-host) "kotodama.jsonld の `@id` が did:web:<host> の形でない")
     (is (seq wrangler-route-hosts) "wrangler.jsonc の routes[] が空")
@@ -329,7 +329,7 @@
             `amu compile --target wasm32-browser test` は成功し、`node out/tests.js` は
             `Ran 0 tests` と言って **exit 0 で終わる**。つまり ns を改名すると
             『測っていない』が『測って問題が無かった』と同じ顔になる
-            （superproject CLAUDE.md の 6 問の 1 番目）。"
+            （superproject AGENTS.md の 6 問の 1 番目）。"
     (let [re (re-pattern (:ns-regexp test-build))
           ns-names (mapv second (re-seq #"(?m)^\(ns ([A-Za-z0-9.\-]+)"
                                         app-test-cljs))]

@@ -28,7 +28,7 @@
 ;; 担当で、ここでは重複させない。
 ;;
 ;; script host が nbb + cljs.test なのは workspace の規則（superproject
-;; CLAUDE.md 「運用 tooling の script host は nbb のみ」。新規の .sh / .mjs /
+;; AGENTS.md 「運用 tooling の script host は nbb のみ」。新規の .sh / .mjs /
 ;; .cjs は禁止）。同じ形の先行例が orgs/cloud-itonami/app-wvme と
 ;; orgs/cloud-itonami/cargo の run_tests.cljs。
 (ns run-tests

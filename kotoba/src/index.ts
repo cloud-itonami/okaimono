@@ -6,7 +6,7 @@
  * TitheRouter). Replaces the vendor Stripe + RisingWave path; no fiat, no RW.
  *
  * Remaining domains (inventory / fulfillment / pricing / reviews / support /
- * manufacturing per okaimono CLAUDE.md) ship in follow-up slices on the same
+ * manufacturing per okaimono AGENTS.md) ship in follow-up slices on the same
  * Option B pattern.
  */
 
